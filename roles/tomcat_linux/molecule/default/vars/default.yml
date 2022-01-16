@@ -1,0 +1,4 @@
+---
+
+prepare_packages:
+  - openjdk-11-jre-headless

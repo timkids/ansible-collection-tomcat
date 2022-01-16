@@ -1,0 +1,34 @@
+---
+
+- name: "Include vars depends on OS"
+  ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      files:
+        - '{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml'
+        - '{{ ansible_distribution }}.yml'
+        - '{{ ansible_os_family }}.yml'
+        - default.yml
+      paths:
+        - 'vars/systems'
+
+- name: "Check java bin exists"
+  ansible.builtin.stat:
+    path: "{{ __java_home }}/bin/java"
+  register: "__java_bin_path_file"
+  failed_when: not __java_bin_path_file.stat.exists
+
+- name: "Main"
+  block:
+    - name: "Configure system"
+      ansible.builtin.import_tasks: configure_system.yml
+
+    - name: "Install tomcat"
+      ansible.builtin.import_tasks: install.yml
+  always:
+    - name: "Delete tomcat archive if required"
+      ansible.builtin.file:
+        path: "{{ tomcat_archive_path }}"
+        state: "absent"
+      when:
+        - "tomcat_delete_archive | bool"

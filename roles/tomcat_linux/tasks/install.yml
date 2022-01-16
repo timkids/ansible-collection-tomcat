@@ -1,0 +1,26 @@
+---
+
+- name: "Download tomcat archive"
+  ansible.builtin.get_url:
+    url: "{{ tomcat_download_url }}"
+    checksum: "{{ tomcat_download_checksum_type }}:{{ tomcat_download_checksum }}"
+    dest: "{{ tomcat_archive_path }}"
+    url_username: "{{ tomcat_download_username | default(omit) }}"
+    url_password: "{{ tomcat_download_password | default(omit) }}"
+  register: __tomcat_download_result
+
+- name: "Set tomcat_force_unarchive to true if archive change"
+  ansible.builtin.set_fact:
+    tomcat_force_unarchive: true
+  when:
+    - "__tomcat_download_result.changed | bool"
+
+- name: "Extract tomcat archive"
+  ansible.builtin.unarchive:
+    src: "{{ tomcat_archive_path }}"
+    dest: "{{ tomcat_installation_path }}"
+    owner: "{{ tomcat_sys_user }}"
+    group: "{{ tomcat_sys_group }}"
+    remote_src: true
+    extra_opts: "--strip-components=1"
+    creates: "{{ tomcat_installation_path }}/bin{{ '/force_ansible_unarchive' if tomcat_force_unarchive }}"

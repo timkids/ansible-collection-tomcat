@@ -18,3 +18,11 @@ repos:
       - id: rst-backticks
         types: [file]
         files: changelogs/fragments/.*\.(yml|yaml)$
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.17.0
+    hooks:
+      - id: yamllint
+  - repo: https://github.com/ansible-community/ansible-lint.git
+    rev: v5.3.2
+    hooks:
+      - id: ansible-lint
