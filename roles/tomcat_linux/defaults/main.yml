@@ -9,8 +9,12 @@ tomcat_sys_user: tomcat
 tomcat_sys_group: tomcat
 
 tomcat_version: "10.0.13"
+tomcat_instance_name: "tomcat"
 
+#########################
 # Download configurations
+#########################
+
 tomcat_download_url: "https://archive.apache.org/dist/tomcat/\
   tomcat-{{ __tomcat_major_version }}/\
   v{{ tomcat_version }}/bin/\
@@ -26,9 +30,44 @@ tomcat_download_checksum: "https://archive.apache.org/dist/tomcat/\
 
 tomcat_archive_path: "/tmp/apache-tomcat-{{ tomcat_version }}.tar.gz"
 
-tomcat_installation_path: "/opt/tomcat-{{ tomcat_sys_user }}"
+tomcat_installation_path: "/opt/tomcat-{{ tomcat_instance_name }}"
 tomcat_force_unarchive: false
 
 # Set to true if you want to delete the archive
 # Be carreful this will make the role non-idempotent
 tomcat_delete_archive: false
+
+######################
+# Tomcat configuration
+######################
+
+tomcat_shutdown_port: 8005
+tomcat_shutdown_pass: "SHUTDOWN"
+
+tomcat_non_ssl_connector_port: 8080
+tomcat_address: 127.0.0.1
+tomcat_ssl_connector_port: 8443
+
+tomcat_access_log_directory: "logs"
+tomcat_access_log_prefix: "localhost_access_log"
+tomcat_access_log_suffix: ".txt"
+tomcat_access_log_pattern: "%h %l %u %t &quot;%r&quot; %s %b"
+
+tomcat_heap_memory: "512m"
+tomcat_heap_start_memory: "256m"
+
+# tomcat_jmx_port: 9875
+# TODO: Handle JMX with authent
+
+################
+# Tomcat service
+################
+
+tomcat_configure_service: true
+tomcat_service_name: "{{ tomcat_instance_name }}"
+tomcat_service_description: "Tomcat container : {{ tomcat_instance_name }}"
+
+tomcat_service_pid: "/var/run/{{ tomcat_instance_name }}.pid"
+tomcat_service_enabled_at_boot: true
+
+tomcat_systemd_service_file_path: "/etc/systemd/system/{{ tomcat_instance_name }}.service"

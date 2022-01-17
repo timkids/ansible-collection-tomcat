@@ -18,7 +18,7 @@
     state: directory
     owner: "{{ tomcat_sys_user }}"
     group: "{{ tomcat_sys_group }}"
-    mode: 0770
+    mode: "0770"
 
 - name: "Ensure tomcat archive path exists"
   ansible.builtin.file:
@@ -26,4 +26,4 @@
     state: directory
     owner: "{{ tomcat_sys_user }}"
     group: "{{ tomcat_sys_group }}"
-    mode: 0770
+    mode: "0770"

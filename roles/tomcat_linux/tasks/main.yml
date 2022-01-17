@@ -25,6 +25,22 @@
 
     - name: "Install tomcat"
       ansible.builtin.import_tasks: install.yml
+
+    - name: "Configure tomcat"
+      ansible.builtin.import_tasks: configure_tomcat.yml
+
+    - name: "Configure tomcat"
+      ansible.builtin.include_tasks: "{{ lookup('first_found', params) }}"
+      vars:
+        params:
+          files:
+            - '{{ ansible_service_mgr }}.yml'
+            - unmanaged_service_mgr.yml
+          paths:
+            - 'service_mgr'
+      when:
+        - "tomcat_configure_service | bool"
+
   always:
     - name: "Delete tomcat archive if required"
       ansible.builtin.file:

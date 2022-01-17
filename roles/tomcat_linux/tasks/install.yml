@@ -7,9 +7,10 @@
     dest: "{{ tomcat_archive_path }}"
     url_username: "{{ tomcat_download_username | default(omit) }}"
     url_password: "{{ tomcat_download_password | default(omit) }}"
+    mode: "0440"
   register: __tomcat_download_result
 
-- name: "Set tomcat_force_unarchive to true if archive change"
+- name: "Set tomcat_force_unarchive to true if archive change" # noqa no-handler
   ansible.builtin.set_fact:
     tomcat_force_unarchive: true
   when:
@@ -24,3 +25,4 @@
     remote_src: true
     extra_opts: "--strip-components=1"
     creates: "{{ tomcat_installation_path }}/bin{{ '/force_ansible_unarchive' if tomcat_force_unarchive }}"
+    mode: "0755"

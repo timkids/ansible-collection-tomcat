@@ -1,10 +1,23 @@
 ---
-# This is an example playbook to execute Ansible tests.
 
 - name: Verify
   hosts: all
   gather_facts: false
   tasks:
-  - name: Example assertion
-    assert:
-      that: true
+  - name: Group exists
+    ansible.builtin.group:
+      name: "tomcat"
+    check_mode: true
+    register: __group_result
+
+  - name: User exists
+    ansible.builtin.user:
+      name: "tomcat"
+    check_mode: true
+    register: __user_result
+
+  - name: "Assert tests results"
+    ansible.builtin.assert:
+      that:
+        - not __group_result.changed
+        - not __user_result.changed

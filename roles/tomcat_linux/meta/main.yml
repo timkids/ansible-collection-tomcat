@@ -1,16 +1,11 @@
 galaxy_info:
+  role_name: tomcat
+  namespace: timkids
   author: Timkids
   description: Install and configure tomcat on linux
 
   issue_tracker_url: https://github.com/timkids/ansible-collection-tomcat/issues
 
-  # Choose a valid license ID from https://spdx.org - some suggested licenses:
-  # - BSD-3-Clause (default)
-  # - MIT
-  # - GPL-2.0-or-later
-  # - GPL-3.0-only
-  # - Apache-2.0
-  # - CC-BY-4.0
   license: GPL-3.0-only
 
   min_ansible_version: 2.10
@@ -19,8 +14,6 @@ galaxy_info:
     - name: rhel
       versions:
       - 8
-    - name: rhel
-      versions:
       - 7
     #- name: ubuntu
     #  versions:

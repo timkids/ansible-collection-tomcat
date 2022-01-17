@@ -1,0 +1,5 @@
+---
+
+- name: "Unmanaged service mgr"
+  fail:
+    msg: "The system manager {{ ansible_service_mgr }} is not managed by this role."

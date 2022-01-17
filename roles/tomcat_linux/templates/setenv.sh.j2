@@ -1,0 +1,11 @@
+{{ ansible_managed | comment }}
+
+JAVA_OPTS="-Xmx {{ tomcat_heap_memory }} ${JAVA_OPTS}"
+
+JAVA_OPTS="-Xms {{ tomcat_heap_start_memory }} ${JAVA_OPTS}"
+
+{% if tomcat_jmx_port is defined %}
+JAVA_OPTS="-Dcom.sun.management.jmxremote.port={{ tomcat_jmx_port }} ${JAVA_OPTS}"
+JAVA_OPTS="-Dcom.sun.management.jmxremote.authenticate=false ${JAVA_OPTS}"
+JAVA_OPTS="-Dcom.sun.management.jmxremote.ssl=false ${JAVA_OPTS}"
+{% endif %}
