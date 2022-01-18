@@ -29,7 +29,7 @@
     - name: "Configure tomcat"
       ansible.builtin.import_tasks: configure_tomcat.yml
 
-    - name: "Configure tomcat"
+    - name: "Configure service"
       ansible.builtin.include_tasks: "{{ lookup('first_found', params) }}"
       vars:
         params:
@@ -40,6 +40,9 @@
             - 'service_mgr'
       when:
         - "tomcat_configure_service | bool"
+
+    - name: "Add additional libs"
+      ansible.builtin.import_tasks: additional_libs.yml
 
   always:
     - name: "Delete tomcat archive if required"

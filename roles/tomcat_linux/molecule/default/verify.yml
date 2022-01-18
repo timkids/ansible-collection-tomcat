@@ -28,6 +28,11 @@
     failed_when:
       - __tomcat_uri_result.content != "Please select an application by adding the context URL.\n"
 
+  - name: "Check the user that runs the process"
+    command: ps -o pid= -o cmd= -u tomcat
+    register: __process_user_result
+    changed_when: false
+
   - name: "Assert tests results"
     ansible.builtin.assert:
       that:
@@ -36,3 +41,5 @@
         - ansible_facts.services['tomcat.service'] is defined
         - ansible_facts.services['tomcat.service']['status'] == "enabled"
         - ansible_facts.services['tomcat.service']['state'] == "running"
+        - __process_user_result.stdout_lines | length > 0
+        - '"tomcat-tomcat" in __process_user_result.stdout'
