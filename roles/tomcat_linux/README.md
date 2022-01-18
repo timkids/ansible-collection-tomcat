@@ -25,12 +25,12 @@ Including an example of how to use your role (for instance, with variables passe
 
     - hosts: servers
       roles:
-         - { role: username.rolename, x: 42 }
+         - { role: timkids.tomcat.tomcat_linux }
 
 License
 -------
 
-BSD
+GPL-3.0-or-later
 
 Author Information
 ------------------
