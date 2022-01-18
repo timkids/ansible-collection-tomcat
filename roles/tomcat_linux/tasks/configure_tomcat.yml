@@ -22,8 +22,11 @@
 
 - name: "Replace the default page"
   ansible.builtin.copy:
-    src: index.html
+    content: |
+      Please select an application by adding the context URL.
     dest: "{{ tomcat_installation_path }}/webapps/ROOT/index.html"
     owner: "{{ tomcat_sys_user }}"
     group: "{{ tomcat_sys_group }}"
     mode: "0640"
+  notify:
+    - "Restart tomcat"

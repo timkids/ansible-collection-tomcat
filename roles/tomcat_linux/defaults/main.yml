@@ -53,8 +53,8 @@ tomcat_access_log_prefix: "localhost_access_log"
 tomcat_access_log_suffix: ".txt"
 tomcat_access_log_pattern: "%h %l %u %t &quot;%r&quot; %s %b"
 
-tomcat_heap_memory: "512m"
-tomcat_heap_start_memory: "256m"
+tomcat_heap_memory: "512M"
+tomcat_heap_start_memory: "256M"
 
 # tomcat_jmx_port: 9875
 # TODO: Handle JMX with authent

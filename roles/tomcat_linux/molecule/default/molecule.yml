@@ -16,18 +16,8 @@ platforms:
       - SYS_ADMIN
     command: "/usr/sbin/init"
     pre_build_image: true
-#  - name: ubuntu2004
-#    image: docker.io/geerlingguy/docker-ubuntu2004-ansible
-#    tmpfs:
-#      - /run
-#      - /tmp
-#    volumes:
-#      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-#    capabilities:
-#      - SYS_ADMIN
-#    command: "/lib/systemd/systemd"
-#    pre_build_image: true
-  - name: debian10
+
+  - name: debian
     image: docker.io/geerlingguy/docker-debian10-ansible
     tmpfs:
       - /run

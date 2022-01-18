@@ -1,8 +1,9 @@
 name: CI_roles
 on:
-  # push:
-  #   branches:
-  #     - initial-works
+  push:
+    branches:
+      - main
+      - stable-*
   pull_request:
 
 jobs:

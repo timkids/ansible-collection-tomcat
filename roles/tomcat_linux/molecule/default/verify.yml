@@ -21,3 +21,11 @@
       that:
         - not __group_result.changed
         - not __user_result.changed
+
+  - name: "Check the tomcat default page"
+    ansible.builtin.uri:
+      url: "http://localhost:8080"
+      return_content: true
+    register: __tomcat_uri_result
+    failed_when:
+      - __tomcat_uri_result.content != "Please select an application by adding the context URL.\n"

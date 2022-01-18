@@ -1,9 +1,5 @@
 ---
 
-- name: "Reset vars"
-  ansible.builtin.set_fact:
-    __tomcat_systemd_config_change:
-
 - name: "Configure systemd"
   ansible.builtin.template:
     src: systemd/tomcat_service.service.j2
