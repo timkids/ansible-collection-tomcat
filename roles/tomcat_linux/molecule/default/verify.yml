@@ -4,23 +4,21 @@
   hosts: all
   gather_facts: false
   tasks:
-  - name: Group exists
+  - name: Group check
     ansible.builtin.group:
       name: "tomcat"
     check_mode: true
     register: __group_result
 
-  - name: User exists
+  - name: User check
     ansible.builtin.user:
       name: "tomcat"
     check_mode: true
     register: __user_result
 
-  - name: "Assert tests results"
-    ansible.builtin.assert:
-      that:
-        - not __group_result.changed
-        - not __user_result.changed
+  - name: Service check
+    ansible.builtin.service_facts:
+    check_mode: true
 
   - name: "Check the tomcat default page"
     ansible.builtin.uri:
@@ -29,3 +27,12 @@
     register: __tomcat_uri_result
     failed_when:
       - __tomcat_uri_result.content != "Please select an application by adding the context URL.\n"
+
+  - name: "Assert tests results"
+    ansible.builtin.assert:
+      that:
+        - not __group_result.changed
+        - not __user_result.changed
+        - ansible_facts.services['tomcat.service'] is defined
+        - ansible_facts.services['tomcat.service']['status'] == "enabled"
+        - ansible_facts.services['tomcat.service']['state'] == "running"
