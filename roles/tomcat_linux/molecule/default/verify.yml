@@ -4,19 +4,24 @@
   hosts: all
   gather_facts: false
   tasks:
-  - name: Group check
+  - name: "Install test requirements"
+    ansible.builtin.package:
+      name: procps
+      state: present
+
+  - name: "Group check"
     ansible.builtin.group:
       name: "tomcat"
     check_mode: true
     register: __group_result
 
-  - name: User check
+  - name: "User check"
     ansible.builtin.user:
       name: "tomcat"
     check_mode: true
     register: __user_result
 
-  - name: Service check
+  - name: "Service check"
     ansible.builtin.service_facts:
     check_mode: true
 

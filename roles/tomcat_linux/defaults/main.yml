@@ -59,7 +59,7 @@ tomcat_heap_start_memory: "256M"
 # tomcat_jmx_port: 9875
 # TODO: Handle JMX with authent
 
-tomcat_additional_libs_url:
+tomcat_additional_libs_url: []
 #  - url: "http://my-lib"
 #    username: [optional]
 #    password: [optional]
