@@ -3,7 +3,7 @@
 - name: "Ensure additional libs are deployed (URL)"
   ansible.builtin.get_url:
     url: "{{ tomcat_lib.url }}"
-    dest: "{{ tomcat_installation_path }}/lib/"
+    dest: "{{ tomcat_home }}/lib/"
     owner: "{{ tomcat_sys_user }}"
     group: "{{ tomcat_sys_group }}"
     mode: "0644"
@@ -17,7 +17,7 @@
 - name: "Ensure additional libs are deployed (Copy)"
   ansible.builtin.copy:
     src: "{{ tomcat_lib.path }}"
-    dest: "{{ tomcat_installation_path }}/lib/"
+    dest: "{{ tomcat_home }}/lib/"
     owner: "{{ tomcat_sys_user }}"
     group: "{{ tomcat_sys_group }}"
     mode: "0644"

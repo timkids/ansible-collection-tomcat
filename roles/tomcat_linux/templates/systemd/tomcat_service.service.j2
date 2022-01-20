@@ -8,10 +8,10 @@ User={{ tomcat_sys_user }}
 Environment=CATALINA_PID={{ tomcat_service_pid }}
 Environment=TOMCAT_JAVA_HOME={{ __java_home }}
 Environment=JAVA_HOME={{ __java_home }}
-Environment=CATALINA_HOME={{ tomcat_installation_path }}
-Environment=CATALINA_BASE={{ tomcat_installation_path }}
+Environment=CATALINA_HOME={{ tomcat_home }}
+Environment=CATALINA_BASE={{ tomcat_home }}
 
-ExecStart={{ tomcat_installation_path }}/bin/catalina.sh run
+ExecStart={{ tomcat_home }}/bin/catalina.sh run
 
 [Install]
 WantedBy=multi-user.target

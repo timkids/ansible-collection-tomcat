@@ -8,13 +8,13 @@
   ansible.builtin.user:
     name: "{{ tomcat_sys_user }}"
     group: "{{ tomcat_sys_group }}"
-    home: "{{ tomcat_installation_path }}"
+    home: "{{ tomcat_home }}"
     createhome: false
     system: true
 
 - name: "Ensure tomcat home dir exists"
   ansible.builtin.file:
-    path: "{{ tomcat_installation_path }}"
+    path: "{{ tomcat_home }}"
     state: directory
     owner: "{{ tomcat_sys_user }}"
     group: "{{ tomcat_sys_group }}"

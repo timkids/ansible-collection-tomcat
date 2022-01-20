@@ -30,7 +30,7 @@ tomcat_download_checksum: "https://archive.apache.org/dist/tomcat/\
 
 tomcat_archive_path: "/tmp/apache-tomcat-{{ tomcat_version }}.tar.gz"
 
-tomcat_installation_path: "/opt/tomcat-{{ tomcat_instance_name }}"
+tomcat_home: "/opt/tomcat-{{ tomcat_instance_name }}"
 tomcat_force_unarchive: false
 
 # Set to true if you want to delete the archive

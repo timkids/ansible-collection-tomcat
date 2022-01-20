@@ -1,6 +1,6 @@
 # Ansible Collection - timkids.tomcat
 
-# Tomcat collection for Ansible
+## Tomcat collection for Ansible
 [![CI_roles](https://github.com/timkids/ansible-collection-tomcat/actions/workflows/test-roles.yml/badge.svg?event=push)](https://github.com/timkids/ansible-collection-tomcat/actions/workflows/test-roles.yml) [![Codecov](https://img.shields.io/codecov/c/github/timkids/ansible-collection-tomcat)](https://codecov.io/gh/timkids/ansible-collection-tomcat)
 
 Install, configure and interact with Tomcat on ansible.

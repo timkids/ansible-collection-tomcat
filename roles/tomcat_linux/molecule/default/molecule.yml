@@ -6,7 +6,7 @@ driver:
 
 platforms:
   - name: rhel8
-    image: registry.access.redhat.com/ubi8/ubi-init
+    image: docker.io/timkids/docker-rhel8-java-ansible
     tmpfs:
       - /run
       - /tmp
@@ -17,8 +17,20 @@ platforms:
     command: "/usr/sbin/init"
     pre_build_image: true
 
-  - name: debian
-    image: docker.io/geerlingguy/docker-debian10-ansible
+  - name: ubuntu2004
+    image: docker.io/timkids/docker-ubuntu2004-java-ansible
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    capabilities:
+      - SYS_ADMIN
+    command: "/lib/systemd/systemd"
+    pre_build_image: true
+
+  - name: debian10
+    image: docker.io/timkids/docker-debian10-java-ansible
     tmpfs:
       - /run
       - /tmp
