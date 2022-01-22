@@ -30,3 +30,9 @@
     mode: "0640"
   notify:
     - "Restart tomcat"
+
+- name: "Disable defaults apps"
+  ansible.builtin.file:
+    path: "{{ tomcat_home }}/webapps/{{ item }}"
+    state: absent
+  loop: "{{ tomcat_apps_to_disable }}"

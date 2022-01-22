@@ -69,6 +69,13 @@ tomcat_additional_libs_copy: []
 #    remote_src: [optional]
 #    : [optional]
 
+tomcat_apps_to_disable:
+  - docs
+  - examples
+  - host-manager
+  - manager
+  - ROOT
+
 ################
 # Tomcat service
 ################
