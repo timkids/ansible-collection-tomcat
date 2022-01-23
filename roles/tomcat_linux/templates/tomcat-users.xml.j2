@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+{{ ansible_managed | comment('xml') }}
+<tomcat-users>
+{% set roles_list = tomcat_users | map(attribute='roles') | flatten | list %}
+
+{% for role in (roles_list | unique) %}
+    <role rolename="{{ role }}"/>
+{% endfor %}
+
+{% for user in tomcat_users %}
+    <user username="{{ user.username }}" password="{{ user.password }}" roles="{{ user.roles | join(',') }}"/>
+{% endfor %}
+
+</tomcat-users>

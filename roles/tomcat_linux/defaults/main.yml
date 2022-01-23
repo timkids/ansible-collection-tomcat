@@ -76,6 +76,13 @@ tomcat_apps_to_disable:
   - manager
   - ROOT
 
+tomcat_users: []
+#  - username: 'tomcat'
+#    password: 'tomcat'
+#    roles:
+#      - manager-gui
+#      - manager-script
+
 ################
 # Tomcat service
 ################

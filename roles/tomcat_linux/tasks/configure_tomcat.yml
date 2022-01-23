@@ -20,6 +20,16 @@
   notify:
     - "Restart tomcat"
 
+- name: "Configure users for tomcat"
+  ansible.builtin.template:
+    src: tomcat-users.xml.j2
+    dest: "{{ tomcat_home }}/conf/tomcat-users.xml"
+    owner: "{{ tomcat_sys_user }}"
+    group: "{{ tomcat_sys_group }}"
+    mode: "0644"
+  notify:
+    - "Restart tomcat"
+
 - name: "Replace the default page"
   ansible.builtin.copy:
     content: |
@@ -28,6 +38,8 @@
     owner: "{{ tomcat_sys_user }}"
     group: "{{ tomcat_sys_group }}"
     mode: "0640"
+  when:
+    - "'ROOT' not in tomcat_apps_to_disable"
   notify:
     - "Restart tomcat"
 
