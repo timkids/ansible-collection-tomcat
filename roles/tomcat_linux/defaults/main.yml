@@ -44,9 +44,28 @@ tomcat_delete_archive: false
 tomcat_shutdown_port: 8005
 tomcat_shutdown_pass: "SHUTDOWN"
 
-tomcat_non_ssl_connector_port: 8080
-tomcat_address: 127.0.0.1
-tomcat_ssl_connector_port: 8443
+tomcat_default_connector_port: 8080
+tomcat_default_connector_address: 127.0.0.1
+tomcat_default_redirect_port: 8443
+
+# Connectors for default "Catalina" Service
+# For each item key/value are directly used on the xml tag
+# Precedence of values
+#   1. path
+#   2. content
+#   3. Attributes
+tomcat_connectors:
+  # Use connector attribute for single line connector
+  - port: "{{ tomcat_default_connector_port }}"
+    address: "{{ tomcat_default_connector_address }}"
+    protocol: "HTTP/1.1"
+    connectionTimeout: "20000"
+    redirectPort: "{{ tomcat_default_redirect_port }}"
+  # Use content of a value if asked
+  # - content:
+  # Import a template file on connectors
+  # The file must be on the ansible host
+  # - path:
 
 tomcat_access_log_directory: "logs"
 tomcat_access_log_prefix: "localhost_access_log"
