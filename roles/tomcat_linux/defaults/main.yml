@@ -95,6 +95,9 @@ tomcat_apps_to_disable:
   - manager
   - ROOT
 
+tomcat_backup_disabled_apps: true
+tomcat_webapps_backup_path: "{{ tomcat_home }}/webapps.bkp"
+
 tomcat_users: []
 #  - username: 'tomcat'
 #    password: 'tomcat'

@@ -43,6 +43,39 @@
   notify:
     - "Restart tomcat"
 
+- block:
+    - name: "Create webapps disabled DIR"
+      ansible.builtin.file:
+        path: "{{ tomcat_webapps_backup_path }}"
+        state: directory
+        owner: "{{ tomcat_sys_user }}"
+        group: "{{ tomcat_sys_group }}"
+        mode: "0755"
+
+    - name: "Check if the disabled webapps exists"
+      ansible.builtin.stat:
+        path: "{{ tomcat_home }}/webapps/{{ item }}"
+      loop: "{{ tomcat_apps_to_disable }}"
+      register: __tomcat_apps_to_disable_stat
+
+    - name: "List apps to disable"
+      ansible.builtin.debug:
+        var: "__tomcat_apps_to_disable_stat"
+        verbosity: 1
+
+    - name: "Backup disabled apps"
+      ansible.builtin.copy:
+        src: "{{ item.stat.path }}"
+        dest: "{{ tomcat_webapps_backup_path }}/{{ item.stat.path | basename }}"
+        remote_src: true
+        owner: "{{ item.stat.pw_name }}"
+        group: "{{ item.stat.gr_name }}"
+      loop: "{{ __tomcat_apps_to_disable_stat.results | default([]) }}"
+      when:
+        - "item.stat.exists | bool"
+  when:
+    - "tomcat_backup_disabled_apps | bool"
+
 - name: "Disable defaults apps"
   ansible.builtin.file:
     path: "{{ tomcat_home }}/webapps/{{ item }}"

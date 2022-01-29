@@ -3,6 +3,10 @@
 - name: Verify
   hosts: all
   gather_facts: false
+  pre_tasks:
+    - name: "Include default vars of the role"
+      ansible.builtin.include_vars: "{{ molecule_scenario_directory }}/../../defaults/main.yml"
+
   tasks:
   - name: "Install test requirements"
     ansible.builtin.package:
@@ -11,13 +15,13 @@
 
   - name: "Group check"
     ansible.builtin.group:
-      name: "tomcat"
+      name: "{{ tomcat_sys_group }}"
     check_mode: true
     register: __group_result
 
   - name: "User check"
     ansible.builtin.user:
-      name: "tomcat"
+      name: "{{ tomcat_sys_user }}"
     check_mode: true
     register: __user_result
 
@@ -25,13 +29,13 @@
     ansible.builtin.service_facts:
     check_mode: true
 
-  - name: "Check the tomcat default page"
-    ansible.builtin.uri:
-      url: "http://localhost:8080"
-      return_content: true
-    register: __tomcat_uri_result
-    failed_when:
-      - __tomcat_uri_result.content != "Please select an application by adding the context URL.\n"
+  # - name: "Check the tomcat default page"
+  #   ansible.builtin.uri:
+  #     url: "http://localhost:{{ tomcat_default_connector_port }}"
+  #     return_content: true
+  #   register: __tomcat_uri_result
+  #   failed_when:
+  #     - __tomcat_uri_result.content != "Please select an application by adding the context URL.\n"
 
   - name: "Check the user that runs the process"
     command: ps -o pid= -o cmd= -u tomcat
@@ -43,8 +47,32 @@
       that:
         - not __group_result.changed
         - not __user_result.changed
-        - ansible_facts.services['tomcat.service'] is defined
-        - ansible_facts.services['tomcat.service']['status'] == "enabled"
-        - ansible_facts.services['tomcat.service']['state'] == "running"
+        - ansible_facts.services['{{ tomcat_service_name }}.service'] is defined
+        - ansible_facts.services['{{ tomcat_service_name }}.service']['status'] == "enabled"
+        - ansible_facts.services['{{ tomcat_service_name }}.service']['state'] == "running"
         - __process_user_result.stdout_lines | length > 0
         - '"tomcat-tomcat" in __process_user_result.stdout'
+
+  - name: "Get status of disabled apps"
+    ansible.builtin.stat:
+      path: "{{ tomcat_home }}/webapps/{{ item }}"
+    loop: "{{ tomcat_apps_to_disable }}"
+    register: __verify_disabled_apps_status
+
+  - name: "Ensure disabled apps are removed from webapps dir"
+    ansible.builtin.assert:
+      that:
+        - "not item.stat.exists"
+    loop: "{{ __verify_disabled_apps_status.results }}"
+
+  - name: "Get status of backuped apps"
+    ansible.builtin.stat:
+      path: "{{ tomcat_webapps_backup_path }}/{{ item }}"
+    loop: "{{ tomcat_apps_to_disable }}"
+    register: __verify_backuped_apps_status
+
+  - name: "Ensure backuped apps are present on webapps backup dir"
+    ansible.builtin.assert:
+      that:
+        - "item.stat.exists"
+    loop: "{{ __verify_backuped_apps_status.results }}"
