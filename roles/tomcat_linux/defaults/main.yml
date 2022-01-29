@@ -61,10 +61,10 @@ tomcat_connectors:
     protocol: "HTTP/1.1"
     connectionTimeout: "20000"
     redirectPort: "{{ tomcat_default_redirect_port }}"
-  # Use content of a value if asked
+  # Use content of a var to deploy a connector
   # - content:
   # Import a template file on connectors
-  # The file must be on the ansible host
+  # The file must be on the ansible controller
   # - path:
 
 tomcat_access_log_directory: "logs"
