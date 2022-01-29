@@ -17,7 +17,12 @@
   limitations under the License.
 -->
 
+{% if tomcat_hardening | bool %}
+{% set random_shutdown_pass = lookup("password", "/dev/null", seed=inventory_hostname) %}
+<Server port="-1" shutdown="{{ random_shutdown_pass }}">
+{% else %}
 <Server port="{{ tomcat_shutdown_port }}" shutdown="{{ tomcat_shutdown_pass }}">
+{% endif %}
   <Listener className="org.apache.catalina.startup.VersionLoggerListener" />
   <!-- Security listener. Documentation at /docs/config/listeners.html
   <Listener className="org.apache.catalina.security.SecurityListener" />
@@ -62,6 +67,11 @@
 {% elif connector.content is defined %}
 {{ connector.content | indent(4) }}
 {% else %}
+{% if tomcat_hardening | bool %}
+    {% set __connector_tpl = connector | combine(__tomcat_connector_hardening) %}
+{% else %}
+    {% set __connector_tpl = connector %}
+{% endif %}
     <Connector {{ connector.keys() | zip(connector.values()) | map('join', '="') | join('" ') }}" />
 {% endif %}
 {% endfor %}

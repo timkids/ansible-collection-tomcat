@@ -44,8 +44,13 @@
     - name: "Add additional libs"
       ansible.builtin.import_tasks: additional_libs.yml
 
+    - name: "Hardening tomcat"
+      ansible.builtin.import_tasks: hardening.yml
+      when:
+        - "tomcat_hardening | bool"
+
   always:
-    - name: "Delete tomcat archive if required"
+    - name: "Delete tomcat archive if asked"
       ansible.builtin.file:
         path: "{{ tomcat_archive_path }}"
         state: "absent"

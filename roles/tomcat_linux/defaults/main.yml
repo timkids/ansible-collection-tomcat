@@ -105,6 +105,15 @@ tomcat_users: []
 #      - manager-gui
 #      - manager-script
 
+##################
+# Tomcat hardening
+##################
+# Hardening tomcat config
+#  - use a random shutdown port
+#  - use a random shutdown pass
+#  - Disable default error pages
+tomcat_hardening: true
+
 ################
 # Tomcat service
 ################
