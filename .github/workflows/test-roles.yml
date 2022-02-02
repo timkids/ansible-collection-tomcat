@@ -22,7 +22,7 @@ jobs:
         with:
           path: ansible_collections/timkids/tomcat
 
-      - name: Generate module list
+      - name: Generate role list
         run: |
           find roles -type d -maxdepth 1 -mindepth 1 | cut -d '/' -f2 | awk NF | jq -sRc 'split("\n") | map(select(length > 0))' > int_test_roles.json
 
@@ -43,8 +43,8 @@ jobs:
     strategy:
       matrix:
         python_version:
-          - "3.6"
-          - "3.9"
+          - 3.8
+          - 3.9
         tomcat_role: ${{ fromJson(needs.roles_matrix.outputs.matrix) }}
 
     steps:
@@ -68,17 +68,9 @@ jobs:
         run: |
           export pyv=$(python -c 'from platform import python_version; print(python_version()[:3])')
           pip install --requirement requirements-${pyv}.txt
+
       - name: Add molecule location to path
         run: echo "${HOME}/.local/bin" >> $GITHUB_PATH
-
-      - name: Build the collection
-        run: ansible-galaxy collection build
-
-      - name: Rename the build artifact
-        run: mv timkids-tomcat-*.tar.gz timkids-tomcat-latest.tar.gz
-
-      - name: Install collection
-        run: ansible-galaxy collection install timkids-tomcat-*.tar.gz
 
       - name: Run molecule test for ${{ matrix.tomcat_role }}
         run: molecule test --all
