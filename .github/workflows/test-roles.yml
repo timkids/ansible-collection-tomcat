@@ -67,8 +67,7 @@ jobs:
       - name: Install requirements
         run: |
           export pyv=$(python -c 'from platform import python_version; print(python_version()[:3])')
-          pip install --requirement requirements-${pyv}.txt
-        working-directory: ansible_collections/timkids/tomcat
+          pip install --requirement ansible_collections/timkids/tomcat/requirements-${pyv}.txt
 
       - name: Add molecule location to path
         run: echo "${HOME}/.local/bin" >> $GITHUB_PATH
