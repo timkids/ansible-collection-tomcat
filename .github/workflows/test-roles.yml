@@ -75,4 +75,7 @@ jobs:
 
       - name: Run molecule test for ${{ matrix.tomcat_role }}
         run: molecule test --all
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
         working-directory: ansible_collections/timkids/tomcat/roles/${{ matrix.tomcat_role }}
