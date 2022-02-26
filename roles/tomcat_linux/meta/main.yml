@@ -1,0 +1,30 @@
+galaxy_info:
+  role_name: tomcat
+  namespace: timkids
+  author: Timkids
+  description: Install and configure tomcat on linux
+
+  issue_tracker_url: https://github.com/timkids/ansible-collection-tomcat/issues
+
+  license: GPL-3.0-only
+
+  min_ansible_version: 2.10
+
+  platforms:
+    - name: rhel
+      versions:
+      - 8
+    #- name: ubuntu
+    #  versions:
+    #  - 20.04
+    - name: debian
+      versions:
+      - 10
+
+  galaxy_tags:
+    - java
+    - tomcat
+
+dependencies: []
+  # List your role dependencies here, one per line. Be sure to remove the '[]' above,
+  # if you add dependencies to this list.

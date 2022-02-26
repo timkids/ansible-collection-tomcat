@@ -1,0 +1,32 @@
+---
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.1.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: fix-encoding-pragma
+      - id: check-ast
+      - id: check-merge-conflict
+      - id: check-symlinks
+  - repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.9.0
+    hooks:
+      - id: rst-backticks
+        types: [file]
+        files: changelogs/fragments/.*\.(yml|yaml)$
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.26.3
+    hooks:
+      - id: yamllint
+  - repo: https://github.com/ansible-community/ansible-lint.git
+    rev: v5.3.2
+    hooks:
+      - id: ansible-lint
+  - repo: https://github.com/sirosen/check-jsonschema
+    rev: 0.10.0
+    hooks:
+      - id: check-github-workflows

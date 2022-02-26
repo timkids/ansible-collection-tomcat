@@ -1,0 +1,17 @@
+[Unit]
+Description={{ tomcat_service_description }}
+After=network.target
+
+[Service]
+Type=simple
+User={{ tomcat_sys_user }}
+Environment=CATALINA_PID={{ tomcat_service_pid }}
+Environment=TOMCAT_JAVA_HOME={{ __java_home }}
+Environment=JAVA_HOME={{ __java_home }}
+Environment=CATALINA_HOME={{ tomcat_home }}
+Environment=CATALINA_BASE={{ tomcat_home }}
+
+ExecStart={{ tomcat_home }}/bin/catalina.sh run
+
+[Install]
+WantedBy=multi-user.target

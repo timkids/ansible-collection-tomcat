@@ -1,0 +1,36 @@
+---
+
+- name: "Ensure tomcat system group exists"
+  ansible.builtin.group:
+    name: "{{ tomcat_sys_group }}"
+
+- name: "Ensure tomcat system user exists"
+  ansible.builtin.user:
+    name: "{{ tomcat_sys_user }}"
+    group: "{{ tomcat_sys_group }}"
+    home: "{{ tomcat_home }}"
+    createhome: false
+    system: true
+
+- name: "Ensure tomcat home dir exists"
+  ansible.builtin.file:
+    path: "{{ tomcat_home }}"
+    state: directory
+    owner: "{{ tomcat_sys_user }}"
+    group: "{{ tomcat_sys_group }}"
+    mode: "0770"
+
+- name: "Stat tomcat archive path"
+  ansible.builtin.stat:
+    path: "{{ tomcat_archive_path | dirname }}"
+  register: __tomcat_archive_stat
+
+- name: "Ensure tomcat archive path exists"
+  ansible.builtin.file:
+    path: "{{ tomcat_archive_path | dirname }}"
+    state: directory
+    owner: "{{ tomcat_sys_user }}"
+    group: "{{ tomcat_sys_group }}"
+    mode: "0770"
+  when:
+    - "not __tomcat_archive_stat.stat.exists"

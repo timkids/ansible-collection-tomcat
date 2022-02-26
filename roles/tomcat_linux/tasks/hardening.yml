@@ -1,0 +1,52 @@
+---
+
+- name: "Always keep ROOT apps when hardening"
+  ansible.builtin.set_fact:
+    __tomcat_apps_to_disable: "{{ tomcat_apps_to_disable | difference(__tomcat_hardening_apps_to_keep) }}"
+
+- name: "Create ROOT apps for error pages"
+  ansible.builtin.file:
+    path: "{{ tomcat_home }}/webapps/ROOT"
+    state: "directory"
+    mode: "0755"
+    owner: "{{ tomcat_sys_user }}"
+    group: "{{ tomcat_sys_group }}"
+
+- name: "Deploy anonymous error page"
+  ansible.builtin.template:
+    src: "error.jsp.j2"
+    dest: "{{ tomcat_home }}/webapps/ROOT/error.jsp"
+    mode: "0644"
+    owner: "{{ tomcat_sys_user }}"
+    group: "{{ tomcat_sys_group }}"
+
+- name: "Deploy anonymous index page"
+  ansible.builtin.template:
+    src: "index.jsp.j2"
+    dest: "{{ tomcat_home }}/webapps/ROOT/index.jsp"
+    mode: "0644"
+    owner: "{{ tomcat_sys_user }}"
+    group: "{{ tomcat_sys_group }}"
+
+- name: "Change default error page"
+  ansible.builtin.blockinfile:
+    path: "{{ tomcat_home }}/conf/web.xml"
+    insertbefore: "</web-app>"
+    marker: "# {mark} TOMCAT HARDENING ERROR PAGES"
+    block: |
+      <error-page>
+        <error-code>404</error-code>
+        <location>/error.jsp</location>
+      </error-page>
+      <error-page>
+        <error-code>403</error-code>
+        <location>/error.jsp</location>
+      </error-page>
+      <error-page>
+        <error-code>500</error-code>
+        <location>/error.jsp</location>
+      </error-page>
+      <error-page>
+        <exception-type>java.lang.Exception</exception-type>
+        <location>/error.jsp</location>
+      </error-page>

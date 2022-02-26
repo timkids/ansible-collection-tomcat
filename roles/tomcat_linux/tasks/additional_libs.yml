@@ -1,0 +1,27 @@
+---
+
+- name: "Ensure additional libs are deployed (URL)"
+  ansible.builtin.get_url:
+    url: "{{ tomcat_lib.url }}"
+    dest: "{{ tomcat_home }}/lib/"
+    owner: "{{ tomcat_sys_user }}"
+    group: "{{ tomcat_sys_group }}"
+    mode: "0644"
+    url_username: "{{ tomcat_lib.url_username | default(omit) }}"
+    url_password: "{{ tomcat_lib.url_password | default(omit) }}"
+    validate_certs: "{{ tomcat_lib.validate_certs | default(omit) }}"
+  loop: "{{ tomcat_additional_libs_url }}"
+  loop_control:
+    loop_var: tomcat_lib
+
+- name: "Ensure additional libs are deployed (Copy)"
+  ansible.builtin.copy:
+    src: "{{ tomcat_lib.path }}"
+    dest: "{{ tomcat_home }}/lib/"
+    owner: "{{ tomcat_sys_user }}"
+    group: "{{ tomcat_sys_group }}"
+    mode: "0644"
+    remote_src: "{{ tomcat_lib.remote_src | default(omit) }}"
+  loop: "{{ tomcat_additional_libs_copy }}"
+  loop_control:
+    loop_var: tomcat_lib

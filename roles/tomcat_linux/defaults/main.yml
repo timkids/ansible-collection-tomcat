@@ -1,0 +1,128 @@
+---
+
+# Set a custom java home if needed
+# Default value for os are stored in vars dir
+# java_home:
+
+# System/group user to launch tomcat
+tomcat_sys_user: tomcat
+tomcat_sys_group: tomcat
+
+tomcat_version: "10.0.13"
+tomcat_instance_name: "tomcat"
+
+#########################
+# Download configurations
+#########################
+
+tomcat_download_url: "https://archive.apache.org/dist/tomcat/\
+  tomcat-{{ __tomcat_major_version }}/\
+  v{{ tomcat_version }}/bin/\
+  apache-tomcat-{{ tomcat_version }}.tar.gz"
+tomcat_download_checksum_type: "sha512"
+tomcat_download_checksum: "https://archive.apache.org/dist/tomcat/\
+  tomcat-{{ __tomcat_major_version }}/\
+  v{{ tomcat_version }}/bin/\
+  apache-tomcat-{{ tomcat_version }}.tar.gz.{{ tomcat_download_checksum_type }}"
+
+# tomcat_download_username:
+# tomcat_download_password:
+
+tomcat_archive_path: "/tmp/apache-tomcat-{{ tomcat_version }}.tar.gz"
+
+tomcat_home: "/opt/tomcat-{{ tomcat_instance_name }}"
+tomcat_force_unarchive: false
+
+# Set to true if you want to delete the archive
+# Be carreful this will make the role non-idempotent
+tomcat_delete_archive: false
+
+######################
+# Tomcat configuration
+######################
+
+tomcat_shutdown_port: 8005
+tomcat_shutdown_pass: "SHUTDOWN"
+
+tomcat_default_connector_port: 8080
+tomcat_default_connector_address: 127.0.0.1
+tomcat_default_redirect_port: 8443
+
+# Connectors for default "Catalina" Service
+# For each item key/value are directly used on the xml tag
+# Precedence of values
+#   1. path
+#   2. content
+#   3. Attributes
+tomcat_connectors:
+  # Use connector attribute for single line connector
+  - port: "{{ tomcat_default_connector_port }}"
+    address: "{{ tomcat_default_connector_address }}"
+    protocol: "HTTP/1.1"
+    connectionTimeout: "20000"
+    redirectPort: "{{ tomcat_default_redirect_port }}"
+  # Use content of a var to deploy a connector
+  # - content:
+  # Import a template file on connectors
+  # The file must be on the ansible controller
+  # - path:
+
+tomcat_access_log_directory: "logs"
+tomcat_access_log_prefix: "localhost_access_log"
+tomcat_access_log_suffix: ".txt"
+tomcat_access_log_pattern: "%h %l %u %t &quot;%r&quot; %s %b"
+
+tomcat_heap_memory: "512M"
+tomcat_heap_start_memory: "256M"
+
+# tomcat_jmx_port: 9875
+# TODO: Handle JMX with authent
+
+tomcat_additional_libs_url: []
+#  - url: "http://my-lib"
+#    username: [optional]
+#    password: [optional]
+
+tomcat_additional_libs_copy: []
+#  - path:
+#    remote_src: [optional]
+#    : [optional]
+
+tomcat_apps_to_disable:
+  - docs
+  - examples
+  - host-manager
+  - manager
+  - ROOT
+
+tomcat_backup_disabled_apps: true
+tomcat_webapps_backup_path: "{{ tomcat_home }}/webapps.bkp"
+
+tomcat_users: []
+#  - username: 'tomcat'
+#    password: 'tomcat'
+#    roles:
+#      - manager-gui
+#      - manager-script
+
+##################
+# Tomcat hardening
+##################
+# Hardening tomcat config
+#  - use a random shutdown port
+#  - use a random shutdown pass
+#  - Disable default error pages
+tomcat_hardening: true
+
+################
+# Tomcat service
+################
+
+tomcat_configure_service: true
+tomcat_service_name: "{{ tomcat_instance_name }}"
+tomcat_service_description: "Tomcat container : {{ tomcat_instance_name }}"
+
+tomcat_service_pid: "/var/run/{{ tomcat_instance_name }}.pid"
+tomcat_service_enabled_at_boot: true
+
+tomcat_systemd_service_file_path: "/etc/systemd/system/{{ tomcat_instance_name }}.service"

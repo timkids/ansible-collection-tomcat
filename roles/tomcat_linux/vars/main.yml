@@ -1,0 +1,15 @@
+---
+
+__java_home: "{{ java_home | default(__system_java_home) }}"
+
+__tomcat_major_version: "{{ tomcat_version.split('.')[0] }}"
+
+__tomcat_connector_hardening:
+  Server: "web"
+  allowTrace: "false"
+  xpoweredby: "false"
+
+__tomcat_apps_to_disable: "{{ tomcat_apps_to_disable }}"
+
+__tomcat_hardening_apps_to_keep:
+  - ROOT

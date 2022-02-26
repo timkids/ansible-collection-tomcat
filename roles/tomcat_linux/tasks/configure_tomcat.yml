@@ -1,0 +1,82 @@
+---
+
+- name: "Configure tomcat server.xml"
+  ansible.builtin.template:
+    src: server.xml.j2
+    dest: "{{ tomcat_home }}/conf/server.xml"
+    owner: "{{ tomcat_sys_user }}"
+    group: "{{ tomcat_sys_group }}"
+    mode: "0644"
+  notify:
+    - "Restart tomcat"
+
+- name: "Configure environment vars for tomcat"
+  ansible.builtin.template:
+    src: setenv.sh.j2
+    dest: "{{ tomcat_home }}/bin/setenv.sh"
+    owner: "{{ tomcat_sys_user }}"
+    group: "{{ tomcat_sys_group }}"
+    mode: "0644"
+  notify:
+    - "Restart tomcat"
+
+- name: "Configure users for tomcat"
+  ansible.builtin.template:
+    src: tomcat-users.xml.j2
+    dest: "{{ tomcat_home }}/conf/tomcat-users.xml"
+    owner: "{{ tomcat_sys_user }}"
+    group: "{{ tomcat_sys_group }}"
+    mode: "0644"
+  notify:
+    - "Restart tomcat"
+
+- name: "Replace the default page"
+  ansible.builtin.copy:
+    content: |
+      Please select an application by adding the context URL.
+    dest: "{{ tomcat_home }}/webapps/ROOT/index.html"
+    owner: "{{ tomcat_sys_user }}"
+    group: "{{ tomcat_sys_group }}"
+    mode: "0640"
+  notify:
+    - "Restart tomcat"
+
+- block:
+    - name: "Create webapps disabled DIR"
+      ansible.builtin.file:
+        path: "{{ tomcat_webapps_backup_path }}"
+        state: directory
+        owner: "{{ tomcat_sys_user }}"
+        group: "{{ tomcat_sys_group }}"
+        mode: "0755"
+
+    - name: "Check if the disabled webapps exists"
+      ansible.builtin.stat:
+        path: "{{ tomcat_home }}/webapps/{{ item }}"
+      loop: "{{ __tomcat_apps_to_disable }}"
+      register: __tomcat_apps_to_disable_stat
+
+    - name: "List apps to disable"
+      ansible.builtin.debug:
+        var: "__tomcat_apps_to_disable_stat"
+        verbosity: 1
+
+    - name: "Backup disabled apps"
+      ansible.builtin.copy:
+        src: "{{ item.stat.path }}"
+        dest: "{{ tomcat_webapps_backup_path }}"
+        remote_src: true
+        owner: "{{ item.stat.pw_name }}"
+        group: "{{ item.stat.gr_name }}"
+        mode: "0755"
+      loop: "{{ __tomcat_apps_to_disable_stat.results | default([]) }}"
+      when:
+        - "item.stat.exists | bool"
+  when:
+    - "tomcat_backup_disabled_apps | bool"
+
+- name: "Disable defaults apps"
+  ansible.builtin.file:
+    path: "{{ tomcat_home }}/webapps/{{ item }}"
+    state: absent
+  loop: "{{ __tomcat_apps_to_disable }}"

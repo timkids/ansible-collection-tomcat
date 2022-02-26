@@ -1,0 +1,10 @@
+---
+
+- name: "Reload and restart tomcat systemd service"
+  ansible.builtin.systemd:
+    daemon_reload: true
+    enabled: "{{ tomcat_service_enabled_at_boot | bool }}"
+    name: "{{ tomcat_service_name }}"
+    state: restarted
+  listen:
+    - "Restart tomcat"
