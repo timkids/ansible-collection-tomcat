@@ -6,39 +6,27 @@ driver:
 
 platforms:
   - name: rhel8
-    image: docker.io/timkids/docker-rhel8-java-ansible
-    tmpfs:
-      - /run
-      - /tmp
+    image: timkids/docker-rhel8-java-ansible
+    command: /sbin/init
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    capabilities:
-      - SYS_ADMIN
-    command: "/usr/sbin/init"
+    privileged: true
     pre_build_image: true
 
   - name: ubuntu2004
-    image: docker.io/timkids/docker-ubuntu2004-java-ansible
-    tmpfs:
-      - /run
-      - /tmp
+    image: timkids/docker-ubuntu2004-java-ansible
+    command: /sbin/init
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    capabilities:
-      - SYS_ADMIN
-    command: "/lib/systemd/systemd"
+    privileged: true
     pre_build_image: true
 
   - name: debian10
-    image: docker.io/timkids/docker-debian10-java-ansible
-    tmpfs:
-      - /run
-      - /tmp
+    image: timkids/docker-debian10-java-ansible
+    command: /sbin/init
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    capabilities:
-      - SYS_ADMIN
-    command: "/lib/systemd/systemd"
+    privileged: true
     pre_build_image: true
 
 provisioner:
