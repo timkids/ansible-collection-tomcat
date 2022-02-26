@@ -26,6 +26,11 @@
     - name: "Install tomcat"
       ansible.builtin.import_tasks: install.yml
 
+    - name: "Hardening tomcat"
+      ansible.builtin.import_tasks: hardening.yml
+      when:
+        - "tomcat_hardening | bool"
+
     - name: "Configure tomcat"
       ansible.builtin.import_tasks: configure_tomcat.yml
 
@@ -43,11 +48,6 @@
 
     - name: "Add additional libs"
       ansible.builtin.import_tasks: additional_libs.yml
-
-    - name: "Hardening tomcat"
-      ansible.builtin.import_tasks: hardening.yml
-      when:
-        - "tomcat_hardening | bool"
 
   always:
     - name: "Delete tomcat archive if asked"

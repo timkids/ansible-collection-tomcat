@@ -38,8 +38,6 @@
     owner: "{{ tomcat_sys_user }}"
     group: "{{ tomcat_sys_group }}"
     mode: "0640"
-  when:
-    - "'ROOT' not in tomcat_apps_to_disable"
   notify:
     - "Restart tomcat"
 
@@ -55,7 +53,7 @@
     - name: "Check if the disabled webapps exists"
       ansible.builtin.stat:
         path: "{{ tomcat_home }}/webapps/{{ item }}"
-      loop: "{{ tomcat_apps_to_disable }}"
+      loop: "{{ __tomcat_apps_to_disable }}"
       register: __tomcat_apps_to_disable_stat
 
     - name: "List apps to disable"
@@ -81,7 +79,4 @@
   ansible.builtin.file:
     path: "{{ tomcat_home }}/webapps/{{ item }}"
     state: absent
-  loop: "{{ tomcat_apps_to_disable }}"
-  when:
-    - "not tomcat_hardening | bool"
-    - "'ROOT' != item"
+  loop: "{{ __tomcat_apps_to_disable }}"

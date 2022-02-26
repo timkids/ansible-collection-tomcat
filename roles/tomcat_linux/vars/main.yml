@@ -8,3 +8,8 @@ __tomcat_connector_hardening:
   Server: "web"
   allowTrace: "false"
   xpoweredby: "false"
+
+__tomcat_apps_to_disable: "{{ tomcat_apps_to_disable }}"
+
+__tomcat_hardening_apps_to_keep:
+  - ROOT

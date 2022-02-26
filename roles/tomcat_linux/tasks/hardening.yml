@@ -1,5 +1,9 @@
 ---
 
+- name: "Always keep ROOT apps when hardening"
+  ansible.builtin.set_fact:
+    __tomcat_apps_to_disable: "{{ tomcat_apps_to_disable | difference(__tomcat_hardening_apps_to_keep) }}"
+
 - name: "Create ROOT apps for error pages"
   ansible.builtin.file:
     path: "{{ tomcat_home }}/webapps/ROOT"
@@ -12,6 +16,14 @@
   ansible.builtin.template:
     src: "error.jsp.j2"
     dest: "{{ tomcat_home }}/webapps/ROOT/error.jsp"
+    mode: "0644"
+    owner: "{{ tomcat_sys_user }}"
+    group: "{{ tomcat_sys_group }}"
+
+- name: "Deploy anonymous index page"
+  ansible.builtin.template:
+    src: "index.jsp.j2"
+    dest: "{{ tomcat_home }}/webapps/ROOT/index.jsp"
     mode: "0644"
     owner: "{{ tomcat_sys_user }}"
     group: "{{ tomcat_sys_group }}"
