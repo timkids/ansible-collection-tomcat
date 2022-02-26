@@ -18,8 +18,7 @@
 -->
 
 {% if tomcat_hardening | bool %}
-{% set random_shutdown_pass = lookup("password", "/dev/null", seed=inventory_hostname) %}
-<Server port="-1" shutdown="{{ random_shutdown_pass }}">
+<Server port="-1" shutdown="{{ tomcat_shutdown_pass }}">
 {% else %}
 <Server port="{{ tomcat_shutdown_port }}" shutdown="{{ tomcat_shutdown_pass }}">
 {% endif %}
