@@ -5,7 +5,14 @@
   gather_facts: false
   pre_tasks:
     - name: "Include default vars of the role"
-      ansible.builtin.include_vars: "{{ molecule_scenario_directory }}/../../defaults/main.yml"
+      ansible.builtin.include_vars: "{{ item }}"
+      loop:
+        - "{{ molecule_scenario_directory }}/../../defaults/main.yml"
+        - "{{ molecule_scenario_directory }}/../../vars/main.yml"
+
+    - name: "Always keep ROOT apps when hardening"
+      ansible.builtin.set_fact:
+        __tomcat_apps_to_disable: "{{ tomcat_apps_to_disable | difference(__tomcat_hardening_apps_to_keep) }}"
 
   tasks:
   - name: "Install test requirements"
@@ -56,7 +63,7 @@
   - name: "Get status of disabled apps"
     ansible.builtin.stat:
       path: "{{ tomcat_home }}/webapps/{{ item }}"
-    loop: "{{ tomcat_apps_to_disable }}"
+    loop: "{{ __tomcat_apps_to_disable }}"
     register: __verify_disabled_apps_status
 
   - name: "Ensure disabled apps are removed from webapps dir"
@@ -68,7 +75,7 @@
   - name: "Get status of backuped apps"
     ansible.builtin.stat:
       path: "{{ tomcat_webapps_backup_path }}/{{ item }}"
-    loop: "{{ tomcat_apps_to_disable }}"
+    loop: "{{ __tomcat_apps_to_disable }}"
     register: __verify_backuped_apps_status
 
   - name: "Ensure backuped apps are present on webapps backup dir"
