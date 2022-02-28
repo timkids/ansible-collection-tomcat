@@ -86,7 +86,6 @@ tomcat_additional_libs_url: []
 tomcat_additional_libs_copy: []
 #  - path:
 #    remote_src: [optional]
-#    : [optional]
 
 tomcat_apps_to_disable:
   - docs

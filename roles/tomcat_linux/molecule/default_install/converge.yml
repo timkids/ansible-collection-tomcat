@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: all
+  vars:
+    tomcat_hardening: false
+    tomcat_apps_to_disable: []
+  tasks:
+    - name: "Include tomcat_linux"
+      include_role:
+        name: "tomcat_linux"
