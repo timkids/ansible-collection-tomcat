@@ -1,0 +1,9 @@
+---
+- name: Converge
+  hosts: all
+  vars:
+    tomcat_configure_service: false
+  tasks:
+    - name: "Include tomcat_linux"
+      include_role:
+        name: "tomcat_linux"

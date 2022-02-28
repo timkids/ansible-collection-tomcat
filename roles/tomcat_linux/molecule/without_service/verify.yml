@@ -1,0 +1,68 @@
+---
+
+- name: Verify
+  hosts: all
+  gather_facts: false
+  pre_tasks:
+    - name: "Include default vars of the role"
+      ansible.builtin.include_vars: "{{ item }}"
+      loop:
+        - "{{ molecule_scenario_directory }}/../../defaults/main.yml"
+        - "{{ molecule_scenario_directory }}/../../vars/main.yml"
+
+    - name: "Always keep ROOT apps when hardening"
+      ansible.builtin.set_fact:
+        __tomcat_apps_to_disable: "{{ tomcat_apps_to_disable | difference(__tomcat_hardening_apps_to_keep) }}"
+
+  tasks:
+  - name: "Install test requirements"
+    ansible.builtin.package:
+      name: procps
+      state: present
+
+  - name: "Group check"
+    ansible.builtin.group:
+      name: "{{ tomcat_sys_group }}"
+    check_mode: true
+    register: __group_result
+
+  - name: "User check"
+    ansible.builtin.user:
+      name: "{{ tomcat_sys_user }}"
+    check_mode: true
+    register: __user_result
+
+  - name: "Service check"
+    ansible.builtin.service_facts:
+    check_mode: true
+
+  - name: "Assert tests results"
+    ansible.builtin.assert:
+      that:
+        - not __group_result.changed
+        - not __user_result.changed
+        - ansible_facts.services['{{ tomcat_service_name }}.service'] is not defined
+
+  - name: "Get status of disabled apps"
+    ansible.builtin.stat:
+      path: "{{ tomcat_home }}/webapps/{{ item }}"
+    loop: "{{ __tomcat_apps_to_disable }}"
+    register: __verify_disabled_apps_status
+
+  - name: "Ensure disabled apps are removed from webapps dir"
+    ansible.builtin.assert:
+      that:
+        - "not item.stat.exists"
+    loop: "{{ __verify_disabled_apps_status.results }}"
+
+  - name: "Get status of backuped apps"
+    ansible.builtin.stat:
+      path: "{{ tomcat_webapps_backup_path }}/{{ item }}"
+    loop: "{{ __tomcat_apps_to_disable }}"
+    register: __verify_backuped_apps_status
+
+  - name: "Ensure backuped apps are present on webapps backup dir"
+    ansible.builtin.assert:
+      that:
+        - "item.stat.exists"
+    loop: "{{ __verify_backuped_apps_status.results }}"

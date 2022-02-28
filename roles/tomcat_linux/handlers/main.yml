@@ -6,5 +6,7 @@
     enabled: "{{ tomcat_service_enabled_at_boot | bool }}"
     name: "{{ tomcat_service_name }}"
     state: restarted
+  when:
+    - "tomcat_configure_service | bool"
   listen:
     - "Restart tomcat"
