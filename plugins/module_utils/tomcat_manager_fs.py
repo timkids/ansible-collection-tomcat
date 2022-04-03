@@ -44,14 +44,14 @@ class TomcatManagerFS(TomcatManager):
     def _parse_version_sh_output(self, version_out):
         pass
 
-    def connect(self, path, **kwargs):
+    def connect(self, tomcat_home, **kwargs):
         """
         Connect to the tomcat manager
         """
 
         # Check that the path is accessible
-        if not path.isabs(path) and not path.isdir(path):
-            raise TomcatConnectionError("Path {1} is not a tomcat_home directory.".format(path))
+        if not path.isdir(tomcat_home) or not path.isabs(tomcat_home):
+            raise TomcatConnectionError("Path {0} is not a tomcat_home directory.".format(tomcat_home))
 
         # Check if the path is a true tomcat_home
         tomcat_files_to_check = [
@@ -61,13 +61,13 @@ class TomcatManagerFS(TomcatManager):
 
         check_result = False
         for file_to_check in tomcat_files_to_check:
-            full_path_file = path.join(path, file_to_check)
+            full_path_file = path.join(tomcat_home, file_to_check)
             check_result &= (path.isfile(full_path_file) and access(full_path_file, R_OK))
 
         if not check_result:
-            raise TomcatConnectionError("Path {1} is not a tomcat_home directory.".format(path))
+            raise TomcatConnectionError("Path {0} is not a tomcat_home directory.".format(path))
 
-        self.__path = path
+        self.__path = tomcat_home
 
     def tomcat_list_apps(self):
         """
