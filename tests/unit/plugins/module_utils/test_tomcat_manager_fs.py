@@ -11,7 +11,8 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
 from ansible_collections.timkids.tomcat.plugins.module_utils.tomcat_manager_fs import TomcatManagerFS
-from ansible_collections.timkids.tomcat.plugins.module_utils.tomcat_models import TomcatConnectionError
+from ansible_collections.timkids.tomcat.plugins.module_utils.tomcat_models import TomcatConnectionError, TomcatBadArguments
+
 
 class TomcatManagerFsTestSuite(TestCase):
 
@@ -20,17 +21,21 @@ class TomcatManagerFsTestSuite(TestCase):
 
         self.module = MagicMock()
 
-
     def tearDown(self):
         """Teardown."""
         super(TomcatManagerFsTestSuite, self).tearDown()
 
+    def test_fs_connection_bad_args(self):
+        tomcatManager = TomcatManagerFS(self.module)
+
+        with pytest.raises(TomcatBadArguments):
+            tomcatManager.connect()
 
     def test_fs_connection_absent_directory(self):
         tomcatManager = TomcatManagerFS(self.module)
 
         with pytest.raises(TomcatConnectionError):
-            tomcatManager.connect("fake_path")
+            tomcatManager.connect(tomcat_home="fake_path")
 
     @patch('os.path.isdir')
     def test_fs_connection_not_abs_directory(self, mock_is_dir):
@@ -38,4 +43,41 @@ class TomcatManagerFsTestSuite(TestCase):
         tomcatManager = TomcatManagerFS(self.module)
 
         with pytest.raises(TomcatConnectionError):
-            tomcatManager.connect("fake_path")
+            tomcatManager.connect(tomcat_home="fake_path")
+
+    @patch('os.path.isdir')
+    @patch('os.path.isabs')
+    def test_fs_connection_not_tomcat_dir(self, mock_is_dir, mock_is_abs):
+        mock_is_dir.return_value = True
+        mock_is_abs.return_value = True
+        tomcatManager = TomcatManagerFS(self.module)
+
+        with pytest.raises(TomcatConnectionError):
+            tomcatManager.connect(tomcat_home="fake_path")
+
+    @patch('os.path.isdir')
+    @patch('os.path.isabs')
+    @patch('os.path.isfile')
+    def test_fs_connection_bad_tomcat_dir_access(self, mock_is_dir, mock_is_abs, mock_is_file):
+        mock_is_dir.return_value = True
+        mock_is_abs.return_value = True
+        mock_is_file.return_value = True
+        tomcatManager = TomcatManagerFS(self.module)
+
+        with pytest.raises(TomcatConnectionError):
+            tomcatManager.connect(tomcat_home="fake_path")
+
+    @patch('ansible_collections.timkids.tomcat.plugins.module_utils.tomcat_manager_fs.TomcatManagerFS._is_tomcat_dir')
+    @patch('os.path.isabs')
+    @patch('os.path.isdir')
+    @patch('os.path.isfile')
+    def test_fs_connection_valid_tomcat_dir(self, mock_access, mock_is_abs, mock_is_dir, mock_is_file):
+        mock_is_dir.return_value = True
+        mock_is_abs.return_value = True
+        mock_is_file.return_value = True
+        mock_access.return_value = True
+        tomcatManager = TomcatManagerFS(self.module)
+
+        res = tomcatManager.connect(tomcat_home="fake_path")
+
+        self.assertTrue(res)

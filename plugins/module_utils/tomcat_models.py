@@ -38,7 +38,16 @@ class TomcatError(Exception):
 
 class TomcatConnectionError(TomcatError):
     """
-    Base class for all errors raised on tomcat modules.
+    Error when connecting to tomcat API.
+
+    .. versionadded:: 1.0.0
+    """
+    pass
+
+
+class TomcatBadArguments(TomcatError):
+    """
+    Bad arguments used with the modules.
 
     .. versionadded:: 1.0.0
     """

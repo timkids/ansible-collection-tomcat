@@ -31,7 +31,7 @@ class TomcatManager:
     The manager can be accessed via the HTTP API or directly on the filesystem
     """
 
-    def connect(self, path, **kwargs):
+    def connect(self, **kwargs):
         """
         Connect to the tomcat manager
         """

@@ -24,10 +24,10 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-from os import path, access, R_OK
+from os import path, access, X_OK, R_OK
 
 from ansible_collections.timkids.tomcat.plugins.module_utils.tomcat_manager import TomcatManager
-from ansible_collections.timkids.tomcat.plugins.module_utils.tomcat_models import TomcatConnectionError
+from ansible_collections.timkids.tomcat.plugins.module_utils.tomcat_models import TomcatConnectionError, TomcatBadArguments
 
 
 class TomcatManagerFS(TomcatManager):
@@ -44,30 +44,43 @@ class TomcatManagerFS(TomcatManager):
     def _parse_version_sh_output(self, version_out):
         pass
 
-    def connect(self, tomcat_home, **kwargs):
+    def _is_tomcat_dir(self, tomcat_home):
+        full_catalina_sh_file = path.join(tomcat_home, "bin/catalina.sh")
+        if not path.isfile(full_catalina_sh_file):
+            raise TomcatConnectionError("{0} does not exists.".format(full_catalina_sh_file))
+
+        if not access(full_catalina_sh_file, X_OK):
+            raise TomcatConnectionError("{0} is not executable.".format(full_catalina_sh_file))
+
+        #  Check catalina.jar
+        full_catalina_jar_file = path.join(tomcat_home, "lib/catalina.jar")
+        if not path.isfile(full_catalina_jar_file):
+            raise TomcatConnectionError("{0} does not exists.".format(full_catalina_jar_file))
+
+        if not access(full_catalina_jar_file, R_OK):
+            raise TomcatConnectionError("{0} is not readable.".format(full_catalina_jar_file))
+
+        return True
+
+    def connect(self, **kwargs):
         """
         Connect to the tomcat manager
         """
+        if 'tomcat_home' not in kwargs:
+            raise TomcatBadArguments("tomcat_home is required when using TomcatManagerFS")
+
+        tomcat_home = kwargs['tomcat_home']
 
         # Check that the path is accessible
         if not path.isdir(tomcat_home) or not path.isabs(tomcat_home):
             raise TomcatConnectionError("Path {0} is not a tomcat_home directory.".format(tomcat_home))
 
         # Check if the path is a true tomcat_home
-        tomcat_files_to_check = [
-            "bin/catalina.sh",
-            "lib/catalina.jar",
-        ]
-
-        check_result = False
-        for file_to_check in tomcat_files_to_check:
-            full_path_file = path.join(tomcat_home, file_to_check)
-            check_result &= (path.isfile(full_path_file) and access(full_path_file, R_OK))
-
-        if not check_result:
-            raise TomcatConnectionError("Path {0} is not a tomcat_home directory.".format(path))
+        self._is_tomcat_dir(tomcat_home)
 
         self.__path = tomcat_home
+
+        return True
 
     def tomcat_list_apps(self):
         """
