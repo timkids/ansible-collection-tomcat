@@ -24,6 +24,7 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
+import re
 from os import path, access, X_OK, R_OK
 
 from ansible_collections.timkids.tomcat.plugins.module_utils.tomcat_manager import TomcatManager
@@ -42,7 +43,14 @@ class TomcatManagerFS(TomcatManager):
         self.__module = module
 
     def _parse_version_sh_output(self, version_out):
-        pass
+        version_result = None
+        version_re = re.compile("Server number:[ ]+([0-9.]+)")
+        for line in version_out.splitlines():
+            version_search = re.search(version_re, line)
+            if version_search:
+                version_result = version_search.group(1)
+
+        return version_result
 
     def _is_tomcat_dir(self, tomcat_home):
         full_catalina_sh_file = path.join(tomcat_home, "bin/catalina.sh")
@@ -102,26 +110,6 @@ class TomcatManagerFS(TomcatManager):
             self.__module.fail_json(msg="Failed to run version.sh", rc=rc, err=err)
 
         if version_out:
-            self.__module.log(version_out)
-            # device_state = lsdev_out.split()[1]
-            # return True, device_state
+            return self._parse_version_sh_output(version_out)
 
-            """
-Using CATALINA_BASE:   /usr/local/tomcat
-Using CATALINA_HOME:   /usr/local/tomcat
-Using CATALINA_TMPDIR: /usr/local/tomcat/temp
-Using JRE_HOME:        /usr/local/openjdk-11
-Using CLASSPATH:       /usr/local/tomcat/bin/bootstrap.jar:/usr/local/tomcat/bin/tomcat-juli.jar
-Using CATALINA_OPTS:
-NOTE: Picked up JDK_JAVA_OPTIONS:  --add-opens=java.base/java.lang=ALL-UNNAMED
---add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED
---add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
-Server version: Apache Tomcat/10.0.17
-Server built:   Feb 21 2022 19:36:49 UTC
-Server number:  10.0.17.0
-OS Name:        Linux
-OS Version:     5.10.0-10-amd64
-Architecture:   amd64
-JVM Version:    11.0.14.1+1
-JVM Vendor:     Oracle Corporation
-            """
+        return None
